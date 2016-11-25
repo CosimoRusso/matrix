@@ -19,7 +19,7 @@ int main(){
 	scanf("%d", &cols);
 	
 	matrix = allocateMatrix(rows, cols);
-	fillMatrix(matrix, rows, cols, 0);//0 to autofill
+	fillMatrix(matrix, rows, cols, 1);//0 to autofill
 	printMatrix(matrix, rows, cols);
 	float determinante;
 	if(rows==cols){
@@ -48,11 +48,15 @@ int calculateRank(float* matrix, int rows, int cols){
 				det = calculateDeterminant(littleMatrix, n,n);
 			}
 		}
-		free(littleMatrix);
-		if(det==0)
+		
+		if(det==0){
 			n--;
-		else
+		}
+		else{
+			printf("Maggiore sottomatrice quadrata non singolare:\n");
+			printMatrix(littleMatrix,n,n);
 			return n;
+		}	
 	}
 	return 0;
 }
