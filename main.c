@@ -34,7 +34,6 @@ int main(){
 }
 
 int calculateRank(float* matrix, int rows, int cols){
-	//calcolo il det di tutte le 2x2 contenute finché non ne trovo una con det!=0
 	float det = 0;
 	int offset = 0;
 	float* littleMatrix;
@@ -45,6 +44,7 @@ int calculateRank(float* matrix, int rows, int cols){
 		for(int i=0;i<=rows-n && det==0;i++){
 			for(int j=0;j<=cols-n && det==0;j++){
 				littleMatrix = getSubMatrix(matrix, rows, cols, i, j, n,n);
+				if(n==1 && littleMatrix[0]!=0)return 1;
 				det = calculateDeterminant(littleMatrix, n,n);
 			}
 		}
