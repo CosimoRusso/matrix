@@ -7,7 +7,8 @@ float* getMatrixWithoutLines(float* matrix, int rows, int cols, int rowToRemove,
 void printMatrix(float* matrix, int rows, int cols);
 void fillMatrix(float* matrix, int rows, int cols, unsigned int autoFill);
 float calculateDeterminant(float* matrix, int rows, int cols);
-
+int calculateRank(float* matrix, int rows, int cols);
+float* getSubMatrix(float* matrix, int rows, int cols, int offsetRow, int offsetCol, int lengthRows, int lengthCols);
 
 int main(){
 	int rows, cols;
@@ -20,17 +21,56 @@ int main(){
 	matrix = allocateMatrix(rows, cols);
 	fillMatrix(matrix, rows, cols, 0);//0 to autofill
 	printMatrix(matrix, rows, cols);
-	
-	float determinante = calculateDeterminant(matrix, rows, cols);
-	printf("Determinante: %-5.2f\n", determinante);
+	float determinante;
+	if(rows==cols){
+		determinante = calculateDeterminant(matrix, rows, cols);
+		printf("Determinante: %-5.2f\n", determinante);
+	}
+	int rango = calculateRank(matrix, rows, cols);
+	printf("rango: %d\n", rango);
 	//in the end...
 	free(matrix);
 	return 0;
 }
 
+int calculateRank(float* matrix, int rows, int cols){
+	//calcolo il det di tutte le 2x2 contenute finché non ne trovo una con det!=0
+	float det = 0;
+	int offset = 0;
+	float* littleMatrix;
+	int Max=(rows>=cols) ? cols : rows;
+	int n=Max;
+	while(n>0){
+		littleMatrix = (float*)malloc(sizeof(float) *pow(n,2));
+		for(int i=0;i<=rows-n && det==0;i++){
+			for(int j=0;j<=cols-n && det==0;j++){
+				littleMatrix = getSubMatrix(matrix, rows, cols, i, j, n,n);
+				det = calculateDeterminant(littleMatrix, n,n);
+			}
+		}
+		free(littleMatrix);
+		if(det==0)
+			n--;
+		else
+			return n;
+	}
+	return 0;
+}
+
+float* getSubMatrix(float* matrix, int rows, int cols, int offsetRow, int offsetCol, int lengthRows, int lengthCols){
+	float* littleMatrix = allocateMatrix(lengthRows,lengthCols);
+	int littleOffset = 0;
+	for(int i=offsetRow; i<offsetRow+lengthRows;i++){
+		for(int j=offsetCol; j<offsetCol+lengthCols;j++){
+			int offset = i*cols+j;
+			littleMatrix[littleOffset++] = matrix[offset];
+		}
+	}
+	return littleMatrix;
+}
+
 float* allocateMatrix(int rows, int cols){
 	return (float*)malloc(rows * cols * sizeof(float));
-	
 }
 
 void fillMatrix(float* matrix, int rows, int cols, unsigned int autoFill){
