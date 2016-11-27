@@ -9,6 +9,8 @@ void fillMatrix(float* matrix, int rows, int cols, unsigned int autoFill);
 float calculateDeterminant(float* matrix, int rows, int cols);
 int calculateRank(float* matrix, int rows, int cols);
 float* getSubMatrix(float* matrix, int rows, int cols, int offsetRow, int offsetCol, int lengthRows, int lengthCols);
+float* getAggiunta(float* matrix, int rows, int cols);
+float* prodottoPerScalare(float* matrix, int rows, int cols, int x);
 
 int main(){
 	int rows, cols;
@@ -26,8 +28,21 @@ int main(){
 		determinante = calculateDeterminant(matrix, rows, cols);
 		printf("Determinante: %-5.2f\n", determinante);
 	}
+	
 	int rango = calculateRank(matrix, rows, cols);
 	printf("rango: %d\n", rango);
+
+	float* aggiunta = getAggiunta(matrix, rows, cols);
+	printf("Matrice inversa:");
+	printMatrix(aggiunta, cols, rows);
+	
+	if(rows==cols && determinante!=0){
+		printf("Matrice inversa:");
+		float* inversa = prodottoPerScalare(aggiunta, rows, cols, 1/determinante);
+		printMatrix(inversa, rows, cols);
+	}
+
+
 	//in the end...
 	free(matrix);
 	return 0;
@@ -132,4 +147,27 @@ float calculateDeterminant(float* matrix, int rows, int cols){
 			free(littleMatrix);
 		}
 	}
+}
+
+float* getAggiunta(float* matrix, int rows, int cols){
+	float* out = (float*)malloc(sizeof(float)*rows*cols);
+	for(int i=0;i<rows;i++){
+		for(int j=0;j<cols;j++){
+			int offset = i*cols+j;
+			float* littleMatrix = getMatrixWithoutLines(matrix, rows, cols, j, i);
+			float det = calculateDeterminant(littleMatrix, rows-1, cols-1);
+			out[offset] = pow(-1, i+j) * det;
+			free(littleMatrix);
+		}
+		
+	}
+	return out;
+}
+
+float* prodottoPerScalare(float* matrix, int rows, int cols, int x){
+	float* out = (float*)malloc(sizeof(float)*rows*cols);
+	for(int i=0;i<rows*cols;i++){
+		out[i] = out[i]*x;
+	}
+	return out;
 }
