@@ -140,12 +140,15 @@ float calculateDeterminant(float* matrix, int rows, int cols){
 	if(rows==2 && cols==2){
 		return matrix[0] * matrix[3] - matrix[1] * matrix[2];
 	}else{
-		int result = 0;
+		float result = 0.0;
 		for(int j=0;j<cols;j++){
-			float* littleMatrix = getMatrixWithoutLines(matrix, rows, cols, 0, j);
-			result += matrix[j] * pow(-1, j) * calculateDeterminant(littleMatrix, rows-1, cols-1);
-			free(littleMatrix);
+			if(matrix[j]!=0){
+				float* littleMatrix = getMatrixWithoutLines(matrix, rows, cols, 0, j);
+				result += matrix[j] * pow(-1, j) * calculateDeterminant(littleMatrix, rows-1, cols-1);
+				free(littleMatrix);
+			}
 		}
+		return result;
 	}
 }
 
